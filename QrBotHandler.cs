@@ -97,7 +97,7 @@ namespace QrBot
 
                 await client.SendTextMessageAsync(
                     update.Message.Chat.Id,
-                    result is null ? "Sorry, I'm unable to decode this image" : $"Decoded text\n\n{result.Text}. Send /scan to try another one",
+                    result is null ? "Sorry, I'm unable to decode this image. Send /scan to try another one" : $"Decoded text\n\n{result.Text}",
                     replyToMessageId: update.Message.MessageId);
             }
         }
