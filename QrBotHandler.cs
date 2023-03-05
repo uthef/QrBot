@@ -24,6 +24,7 @@ namespace QrBot
                 if (update.Message is null) return;
 
                 var strBuilder = new StringBuilder();
+                strBuilder.AppendLine("Here is the list of all available commands");
 
                 foreach (var item in Commands)
                 {
