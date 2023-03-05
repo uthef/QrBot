@@ -97,7 +97,7 @@ namespace QrBot
 
                 await client.SendTextMessageAsync(
                     update.Message.Chat.Id,
-                    result is null ? "Sorry, I'm unable to decode this image" : $"Decoded text\n\n{result.Text}",
+                    result is null ? "Sorry, I'm unable to decode this image" : $"Decoded text\n\n{result.Text}. Send /scan to try another one",
                     replyToMessageId: update.Message.MessageId);
             }
         }
@@ -114,7 +114,7 @@ namespace QrBot
                 if (data.Length > 512)
                 {
                     await client.SendTextMessageAsync(update.Message.Chat.Id,
-                        "The text length must not exceed 512 characters", 
+                        "The text length must not exceed 512 characters. Send /gen_qr to try again", 
                         replyToMessageId: update.Message.MessageId);
                     return;
                 }
