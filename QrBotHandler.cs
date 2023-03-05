@@ -79,6 +79,7 @@ namespace QrBot
                 RemovePendingRequest(update.Message.From.Id);
 
                 BarcodeReader reader = new();
+                reader.Options.TryInverted = true;
 
                 var photo = update.Message.Photo.Last();
                 var file = await client.GetFileAsync(photo.FileId);
@@ -91,6 +92,7 @@ namespace QrBot
                 stream.Seek(0, SeekOrigin.Begin);
 
                 var barcodeBitmap = SKBitmap.Decode(stream);
+
                 var result = reader.Decode(barcodeBitmap);
 
                 await client.SendTextMessageAsync(
