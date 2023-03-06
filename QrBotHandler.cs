@@ -52,7 +52,7 @@ namespace QrBot
         {
             if (update.Type is UpdateType.Message && update.Message is { } && update.Message.From is { })
             {
-                AddPendingRequest(update.Message.From.Id, GenerateQrCode);
+                AddPendingRequest(update.Message.From.Id, GenerateBarcode);
 
                 await client.SendTextMessageAsync(update.Message.Chat.Id,
                     "Enter QR code data",
@@ -74,7 +74,9 @@ namespace QrBot
 
         private async Task ScanBarcode(ITelegramBotClient client, Update update)
         {
-            if (update.Type is UpdateType.Message && update.Message is { } && update.Message.From is { } && update.Message.Photo is {})
+            if (update.Type is not UpdateType.Message || update.Message is not { }) return;
+            
+            if (update.Message.From is { } && update.Message.Photo is { })
             {
                 RemovePendingRequest(update.Message.From.Id);
 
@@ -99,10 +101,18 @@ namespace QrBot
                     update.Message.Chat.Id,
                     result is null ? "Sorry, I'm unable to decode this image. Send /scan to try another one" : $"Decoded text\n\n{result.Text}",
                     replyToMessageId: update.Message.MessageId);
+                return;
             }
+
+            await client.SendTextMessageAsync(
+                update.Message.Chat.Id,
+                "A single *compressed* image is expected. Try again",
+                parseMode: ParseMode.Markdown,
+                replyToMessageId: update.Message.MessageId);
+            
         }
 
-        private async Task GenerateQrCode(ITelegramBotClient client, Update update)
+        private async Task GenerateBarcode(ITelegramBotClient client, Update update)
         {
             if (update.Type is UpdateType.Message && update.Message is { } && update.Message.From is { })
             {
