@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using SkiaSharp;
 using ZXing.SkiaSharp;
 using System.Text;
+using System.IO;
 
 namespace QrBot
 {
@@ -114,17 +115,18 @@ namespace QrBot
 
         private async Task GenerateBarcode(ITelegramBotClient client, Update update)
         {
-            if (update.Type is UpdateType.Message && update.Message is { } && update.Message.From is { })
+            if (update.Type is not UpdateType.Message || update.Message is not { }) return;
+
+            if  (update.Message.Text is { } && update.Message.From is { })
             {
                 RemovePendingRequest(update.Message.From.Id);
-
                 int width = DefaultImageSize, height = DefaultImageSize, margin = DefaultMargin;
                 string data = update.Message.Text ?? "";
 
                 if (data.Length > 512)
                 {
                     await client.SendTextMessageAsync(update.Message.Chat.Id,
-                        "The text length must not exceed 512 characters. Send /gen_qr to try again", 
+                        "The text length must not exceed 512 characters. Send /gen_qr to try again",
                         replyToMessageId: update.Message.MessageId);
                     return;
                 }
@@ -156,10 +158,16 @@ namespace QrBot
 
 #pragma warning disable CS8604 // Possible null reference argument.
                 await client.SendPhotoAsync(update.Message.Chat.Id,
-                    stream, 
+                    stream,
                     replyToMessageId: update.Message.MessageId);
 #pragma warning restore CS8604 // Possible null reference argument.
+
+                return;
             }
+
+            await client.SendTextMessageAsync(update.Message.Chat.Id,
+                "A text message is expected. Try again",
+                replyToMessageId: update.Message.MessageId);
         }
     }
 }
