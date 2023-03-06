@@ -60,8 +60,11 @@ namespace QrBot.Architecture
 
             if (update.Message?.From is { })
             {
-                RemovePendingRequest(update.Message.From.Id);
-                action?.Invoke(botClient, update);
+                if (action is not null)
+                {
+                    RemovePendingRequest(update.Message.From.Id);
+                    await action.Invoke(botClient, update);
+                }
 
                 if (_pendingRequests.TryGetValue(update.Message.From.Id, out var request) && action is null)
                 {
