@@ -4,7 +4,6 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types;
 using ZXing.QrCode;
 using ZXing;
-using System.Runtime.InteropServices;
 using SkiaSharp;
 using ZXing.SkiaSharp;
 using System.Text;
@@ -121,6 +120,7 @@ namespace QrBot
             if  (update.Message.Text is { } && update.Message.From is { })
             {
                 RemovePendingRequest(update.Message.From.Id);
+
                 int width = DefaultImageSize, height = DefaultImageSize, margin = DefaultMargin;
                 string data = update.Message.Text ?? "";
 
@@ -132,30 +132,26 @@ namespace QrBot
                     return;
                 }
 
-                var encodingOptions = new QrCodeEncodingOptions
-                {
-                    Height = height,
-                    Width = width,
-                    Margin = margin
-                };
-
-                encodingOptions.Hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");
-
-                var qrCodeWriter = new BarcodeWriterPixelData
+                var qrCodeWriter = new BarcodeWriter
                 {
                     Format = BarcodeFormat.QR_CODE,
-                    Options = encodingOptions
+                    Options = new QrCodeEncodingOptions
+                    {
+                        Height = height,
+                        Width = width,
+                        Margin = margin,
+                        CharacterSet = "UTF-8"
+                    }
                 };
 
-                var pixelData = qrCodeWriter.Write(data);
+                using var bitmap = qrCodeWriter.Write(data);
+                using var skImage = SKImage.FromBitmap(bitmap);
+                using var skData = skImage.Encode();
+                using var stream = new MemoryStream();
 
-                var gcHandle = GCHandle.Alloc(pixelData.Pixels, GCHandleType.Pinned);
-                var info = new SKImageInfo(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Unpremul);
-                var bitmap = new SKBitmap(pixelData.Width, pixelData.Height, SKColorType.Bgra8888, SKAlphaType.Unpremul);
+                skData.SaveTo(stream);
 
-                bitmap.InstallPixels(info, gcHandle.AddrOfPinnedObject(), info.RowBytes);
-
-                var stream = SKImage.FromBitmap(bitmap).Encode(SKEncodedImageFormat.Jpeg, 100).AsStream();
+                stream.Position = 0;
 
 #pragma warning disable CS8604 // Possible null reference argument.
                 await client.SendPhotoAsync(update.Message.Chat.Id,
