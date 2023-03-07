@@ -13,7 +13,7 @@ namespace QrBot.Architecture
         private readonly Dictionary<string, Command> _commands = new();
         private readonly Dictionary<long, HandlerAction> _pendingRequests = new();
         private readonly Regex _commandRegex;
-
+        private ILogger? _logger { get; }
         protected Bot Bot;
 
         protected BotCommand[] Commands 
@@ -36,10 +36,11 @@ namespace QrBot.Architecture
             } 
         }
 
-        public BotUpdateHandler(string botUsername, Bot bot)
+        public BotUpdateHandler(string botUsername, Bot bot, ILogger? logger = null)
         {
             Bot = bot;
             _commandRegex = new(@$"(?<=^/)\w+((?=@{botUsername}$)|$)", RegexOptions.Compiled);
+            _logger = logger;
         }
 
         public virtual async Task HandlePollingErrorAsync(
@@ -55,7 +56,6 @@ namespace QrBot.Architecture
             Update update, 
             CancellationToken cancellationToken)
         {
-
             var action = TryParseCommand(update);
 
             if (update.Message?.From is { })
@@ -63,12 +63,26 @@ namespace QrBot.Architecture
                 if (action is not null)
                 {
                     RemovePendingRequest(update.Message.From.Id);
-                    await action.Invoke(botClient, update);
+                    try
+                    {
+                        await action.Invoke(botClient, update);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogError(ex, ex.Message);
+                    }
                 }
 
                 if (_pendingRequests.TryGetValue(update.Message.From.Id, out var request) && action is null)
                 {
-                    await request.Invoke(botClient, update);
+                    try
+                    {
+                        await request.Invoke(botClient, update);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogError(ex, ex.Message);
+                    }
                 }
             }
         }

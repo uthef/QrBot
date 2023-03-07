@@ -12,7 +12,12 @@ var baseUrl = config.GetSection("BaseUrl").Get<string>();
 
 if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
 {
-    var bot = new Bot(token, typeof(QrBotHandler));
+    var updateHandlerLogger = new Logger<BotUpdateHandler>(LoggerFactory.Create(options =>
+    {
+        options.AddConsole();
+    }));
+
+    var bot = new Bot(token, typeof(QrBotHandler), updateHandlerLogger);
     await bot.Client.DeleteWebhookAsync();
 
     if (builder.Environment.IsDevelopment())

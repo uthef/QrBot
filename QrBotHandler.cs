@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using SkiaSharp;
 using ZXing.SkiaSharp;
 using System.Text;
-using System.IO;
 
 namespace QrBot
 {
@@ -17,7 +16,7 @@ namespace QrBot
         public const int DefaultImageSize = 512,
             DefaultMargin = 1;
 
-        public QrBotHandler(string botUsername, Bot bot) : base(botUsername, bot)
+        public QrBotHandler(string botUsername, Bot bot, ILogger logger) : base(botUsername, bot, logger)
         {
  
             DefineCommand("start", "List available commands", async (client, update) =>
@@ -46,7 +45,8 @@ namespace QrBot
 
         public override Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            throw exception;
+            Console.WriteLine(exception.Message + exception.StackTrace);
+            return Task.CompletedTask;
         }
 
         private async Task GenerateCommandHandler(ITelegramBotClient client, Update update)
@@ -83,6 +83,7 @@ namespace QrBot
 
                 BarcodeReader reader = new();
                 reader.Options.TryInverted = true;
+                reader.Options.TryHarder = true;
 
                 var photo = update.Message.Photo.Last();
                 var file = await client.GetFileAsync(photo.FileId);
