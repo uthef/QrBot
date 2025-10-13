@@ -15,7 +15,7 @@ namespace QrBot.Architecture
             Token = token;
             Client = new TelegramBotClient(token);
 
-            string? username = Client.GetMeAsync().GetAwaiter().GetResult().Username;
+            string? username = Client.GetMe().GetAwaiter().GetResult().Username;
 
             if (!typeof(BotUpdateHandler).IsAssignableFrom(handlerType))
             {

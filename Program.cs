@@ -18,19 +18,19 @@ if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
     }));
 
     var bot = new Bot(token, typeof(QrBotHandler), updateHandlerLogger);
-    await bot.Client.DeleteWebhookAsync();
+    await bot.Client.DeleteWebhook();
 
     if (builder.Environment.IsDevelopment())
     {
         bot.Client.StartReceiving(bot.UpdateHandler, new ReceiverOptions
         {
-            ThrowPendingUpdates = true
+            DropPendingUpdates = true,
         });
     }
     else
     {
         var url = $"{baseUrl}/Bot/Post/{token}";
-        await bot.Client.SetWebhookAsync(url);
+        await bot.Client.SetWebhook(url);
     }
 
     botFactory.Register(bot);

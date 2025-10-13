@@ -30,16 +30,18 @@ namespace QrBot
                 {
                     strBuilder.AppendLine($"/{item.Command} - {item.Description}");
                 }
-
-                await client.SendTextMessageAsync(update.Message.Chat.Id, 
+                await client.SendMessage(update.Message.Chat.Id, 
                     strBuilder.ToString(), 
-                    replyToMessageId: update.Message.MessageId);
+                    replyParameters: new()
+                    {
+                        MessageId = update.Message.MessageId
+                    });
             });
 
             DefineCommand("gen_qr", "Generate a new QR code image", GenerateCommandHandler);
             DefineCommand("scan", "Scan QR code or barcode image", ScanCommandHandler);
 
-            bot.Client.SetMyCommandsAsync(Commands).Wait();
+            bot.Client.SetMyCommands(Commands).Wait();
         }
 
         public override Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -54,9 +56,12 @@ namespace QrBot
             {
                 AddPendingRequest(update.Message.From.Id, GenerateBarcode);
 
-                await client.SendTextMessageAsync(update.Message.Chat.Id,
+                await client.SendMessage(update.Message.Chat.Id,
                     "Enter QR code data",
-                    replyToMessageId: update.Message.MessageId);
+                    replyParameters: new()
+                    {
+                        MessageId = update.Message.MessageId
+                    });
             }
         }
 
@@ -66,9 +71,12 @@ namespace QrBot
             {
                 AddPendingRequest(update.Message.From.Id, ScanBarcode);
 
-                await client.SendTextMessageAsync(update.Message.Chat.Id, 
+                await client.SendMessage(update.Message.Chat.Id, 
                     "Send me an image containing QR code or barcode", 
-                    replyToMessageId: update.Message.MessageId);
+                    replyParameters: new()
+                    {
+                        MessageId = update.Message.MessageId
+                    });
             }
         }
 
@@ -85,31 +93,36 @@ namespace QrBot
                 reader.Options.TryHarder = true;
 
                 var photo = update.Message.Photo.Last();
-                var file = await client.GetFileAsync(photo.FileId);
+                var file = await client.GetFile(photo.FileId);
                 using var stream = new MemoryStream();
 
                 if (file.FilePath is null) return;
 
-                await client.DownloadFileAsync(file.FilePath, stream);
+                await client.DownloadFile(file.FilePath, stream);
 
                 stream.Seek(0, SeekOrigin.Begin);
 
                 var barcodeBitmap = SKBitmap.Decode(stream);
 
                 var result = reader.Decode(barcodeBitmap);
-
-                await client.SendTextMessageAsync(
+                await client.SendMessage(
                     update.Message.Chat.Id,
                     result is null ? "Sorry, I'm unable to decode this image. Send /scan to try another one" : $"Decoded text\n\n{result.Text}",
-                    replyToMessageId: update.Message.MessageId);
+                    replyParameters: new()
+                    {
+                        MessageId = update.Message.MessageId
+                    });
                 return;
             }
 
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 update.Message.Chat.Id,
                 "A single *compressed* image is expected. Try again",
                 parseMode: ParseMode.Markdown,
-                replyToMessageId: update.Message.MessageId);
+                replyParameters: new()
+                {
+                    MessageId = update.Message.MessageId
+                });
             
         }
 
@@ -126,9 +139,13 @@ namespace QrBot
 
                 if (data.Length > 512)
                 {
-                    await client.SendTextMessageAsync(update.Message.Chat.Id,
+                    await client.SendMessage(update.Message.Chat.Id,
                         "The text length must not exceed 512 characters. Send /gen_qr to try again",
-                        replyToMessageId: update.Message.MessageId);
+                        replyParameters: new()
+                        {
+                            MessageId = update.Message.MessageId
+                        });
+                    
                     return;
                 }
 
@@ -154,17 +171,23 @@ namespace QrBot
                 stream.Position = 0;
 
 #pragma warning disable CS8604 // Possible null reference argument.
-                await client.SendPhotoAsync(update.Message.Chat.Id,
+                await client.SendPhoto(update.Message.Chat.Id,
                     stream,
-                    replyToMessageId: update.Message.MessageId);
+                    replyParameters: new()
+                    {
+                        MessageId = update.Message.MessageId
+                    });
 #pragma warning restore CS8604 // Possible null reference argument.
 
                 return;
             }
 
-            await client.SendTextMessageAsync(update.Message.Chat.Id,
+            await client.SendMessage(update.Message.Chat.Id,
                 "A text message is expected. Try again",
-                replyToMessageId: update.Message.MessageId);
+                replyParameters: new()
+                {
+                    MessageId = update.Message.MessageId
+                });
         }
     }
 }

@@ -87,6 +87,13 @@ namespace QrBot.Architecture
             }
         }
 
+        public async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source,
+            CancellationToken cancellationToken)
+        {
+            _logger?.LogError(exception, null);
+            await Task.CompletedTask;
+        }
+
         private HandlerAction? TryParseCommand(Update update)
         {
             if (update.Type != UpdateType.Message || update.Message is not { } message) return null;
