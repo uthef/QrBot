@@ -1,4 +1,4 @@
-namespace QrBot;
+namespace QrBot.Core;
 
 public static class QrColor
 {

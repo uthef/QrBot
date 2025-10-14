@@ -1,6 +1,6 @@
 using QrBot.Architecture;
 
-namespace QrBot;
+namespace QrBot.Core;
 
 public class QrBotCommand : Command
 {

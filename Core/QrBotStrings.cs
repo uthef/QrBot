@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace QrBot;
+namespace QrBot.Core;
 
 public static class QrBotStrings
 {
