@@ -47,8 +47,6 @@ namespace QrBot
                 {
                     MessageId = update.Message.MessageId
                 });
-            
-            Console.WriteLine(update.Message.From?.LanguageCode);
         }
         
         public override Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -286,15 +284,14 @@ namespace QrBot
                 skData.SaveTo(stream);
 
                 stream.Position = 0;
-
-#pragma warning disable CS8604 // Possible null reference argument.
+                
                 await client.SendPhoto(update.Message.Chat.Id,
                     stream,
                     replyParameters: new()
                     {
                         MessageId = update.Message.MessageId
-                    });
-#pragma warning restore CS8604 // Possible null reference argument.
+                    },
+                    caption: QrBotStrings.GetLocalizedString(QrBotStrings.ImageCaption, update.Message.From.LanguageCode));
 
                 return;
             }

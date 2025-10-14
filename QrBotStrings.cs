@@ -14,6 +14,7 @@ public static class QrBotStrings
     
     public const string DecodedText = "DECODED_TEXT";
     public const string SelectedColor = "SELECTED_COLOR";
+    public const string ImageCaption = "IMAGE_CAPTION";
     
     public const string ScanRequest = "SCAN_REQUEST";
     public const string QrCodeDataRequest = "QR_CODE_DATA_REQUEST";
@@ -167,5 +168,12 @@ public static class QrBotStrings
                     "Зелёный"
                 ]
             },
+            {
+                ImageCaption,
+                [
+                    "Your QR code is ready!",
+                    "Ваш QR-код готов!"
+                ]
+            }
         }.ToImmutableDictionary();
 }
