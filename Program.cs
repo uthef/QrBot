@@ -10,6 +10,11 @@ var botFactory = new BotFactory();
 var botTokens = config.GetSection("Bots").Get<Dictionary<string, string>>();
 var baseUrl = config.GetSection("BaseUrl").Get<string>();
 
+builder.Services.AddSingleton(botFactory);
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
 if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
 {
     var updateHandlerLogger = new Logger<BotUpdateHandler>(LoggerFactory.Create(options =>
@@ -22,6 +27,7 @@ if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
 
     if (builder.Environment.IsDevelopment())
     {
+        app.Logger.LogInformation("Started in long polling mode");
         bot.Client.StartReceiving(bot.UpdateHandler, new ReceiverOptions
         {
             DropPendingUpdates = true,
@@ -29,6 +35,9 @@ if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
     }
     else
     {
+        app.Logger.LogInformation("Started in webhook mode");
+        app.Logger.LogInformation($"Base url: {baseUrl}");
+        
         var url = $"{baseUrl}/Bot/Post/{token}";
         await bot.Client.SetWebhook(url);
     }
@@ -36,9 +45,6 @@ if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
     botFactory.Register(bot);
 }
 
-builder.Services.AddSingleton(botFactory);
-builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
 app.MapControllers();
 app.Run();
