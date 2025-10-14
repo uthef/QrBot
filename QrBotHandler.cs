@@ -1,4 +1,5 @@
-﻿using QrBot.Architecture;
+﻿using System.Globalization;
+using QrBot.Architecture;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types;
@@ -137,7 +138,7 @@ namespace QrBot
                 int width = DefaultImageSize, height = DefaultImageSize, margin = DefaultMargin;
                 string data = update.Message.Text ?? "";
 
-                if (data.Length > 512)
+                if (new StringInfo(data).LengthInTextElements > 512)
                 {
                     await client.SendMessage(update.Message.Chat.Id,
                         "The text length must not exceed 512 characters. Send /gen_qr to try again",

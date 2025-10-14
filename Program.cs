@@ -45,6 +45,5 @@ if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
     botFactory.Register(bot);
 }
 
-
 app.MapControllers();
 app.Run();
