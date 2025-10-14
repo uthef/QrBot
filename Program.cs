@@ -11,7 +11,7 @@ var botTokens = config.GetSection("Bots").Get<Dictionary<string, string>>();
 var baseUrl = config.GetSection("BaseUrl").Get<string>();
 
 builder.Services.AddSingleton(botFactory);
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 

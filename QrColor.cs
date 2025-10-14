@@ -2,9 +2,11 @@ namespace QrBot;
 
 public static class QrColor
 {
-    public const string WhiteOnBlack = "White on black";
-    public const string BlackOnWhite = "Black on white";
-    public const string Red = "Red";
-    public const string Green = "Green";
-    public const string Blue = "Blue";
+    public const string Prefix = "selectColor:";
+    
+    public const string WhiteOnBlack = $"{Prefix}whiteOnBlack";
+    public const string BlackOnWhite = $"{Prefix}blackOnWhite";
+    public const string Red = $"{Prefix}red";
+    public const string Green = $"{Prefix}green";
+    public const string Blue = $"{Prefix}blue";
 }

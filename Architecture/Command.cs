@@ -10,6 +10,8 @@
             Description = description;
             Handler = handler;
         }
+        
+        public virtual string GetDescription(string? code) => Description;
 
     }
 }

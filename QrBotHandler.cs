@@ -20,11 +20,12 @@ namespace QrBot
 
         public QrBotHandler(string botUsername, Bot bot, ILogger logger) : base(botUsername, bot, logger)
         {
-            DefineCommand("start", "List available commands", ListCommandsHandler);
-            DefineCommand("gen_qr", "Generate a new QR code image", GenerateCommandHandler);
-            DefineCommand("scan", "Scan QR code or barcode image", ScanCommandHandler);
+            DefineCommand("start", new QrBotCommand(QrBotStrings.StartCommandDescription, ListCommandsHandler));
+            DefineCommand("gen_qr", new QrBotCommand(QrBotStrings.GenerateCommandDescription, GenerateCommandHandler));
+            DefineCommand("scan", new QrBotCommand(QrBotStrings.ScanCommandDescription, ScanCommandHandler));
 
-            bot.Client.SetMyCommands(Commands).Wait();
+            bot.Client.SetMyCommands(GetCommands("en")).Wait();
+            bot.Client.SetMyCommands(GetCommands("ru"), languageCode: "ru").Wait();
         }
 
         private async Task ListCommandsHandler(ITelegramBotClient client, Update update, string? data = null)
@@ -32,10 +33,11 @@ namespace QrBot
             if (update.Message is null) return;
 
             var strBuilder = new StringBuilder();
-            strBuilder.AppendLine("Here is the list of all available commands");
+            strBuilder.AppendLine(QrBotStrings.GetLocalizedString(QrBotStrings.AvailableCommandsInfo, 
+                update.Message.From?.LanguageCode));
             strBuilder.AppendLine();
 
-            foreach (var item in Commands)
+            foreach (var item in GetCommands(update.Message.From?.LanguageCode))
             {
                 strBuilder.AppendLine($"/{item.Command} - {item.Description}");
             }
@@ -45,6 +47,8 @@ namespace QrBot
                 {
                     MessageId = update.Message.MessageId
                 });
+            
+            Console.WriteLine(update.Message.From?.LanguageCode);
         }
         
         public override Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -55,7 +59,7 @@ namespace QrBot
         
         private async Task GenerateCommandHandler(ITelegramBotClient client, Update update, string? data)
         {
-            if (update is not { Type: UpdateType.Message, Message.From: not null, } )
+            if (update is not { Type: UpdateType.Message, Message.From: not null } )
             {
                 return;
             }
@@ -63,19 +67,37 @@ namespace QrBot
             AddPendingRequest(update.Message.From.Id, GetQrCodeData);
             
             var replyMarkup = new InlineKeyboardMarkup();
+            var langCode = update.Message.From.LanguageCode;
             
             replyMarkup.AddButtons(
-                new(QrColor.BlackOnWhite) { CallbackData = QrColor.BlackOnWhite }, 
-                new(QrColor.WhiteOnBlack) { CallbackData = QrColor.WhiteOnBlack });
+                new(QrBotStrings.GetLocalizedString(QrColor.BlackOnWhite, langCode))
+                {
+                    CallbackData = QrColor.BlackOnWhite
+                }, 
+                new(QrBotStrings.GetLocalizedString(QrColor.WhiteOnBlack, langCode))
+                {
+                    CallbackData = QrColor.WhiteOnBlack 
+                });
 
             replyMarkup.AddNewRow();
 
             replyMarkup.AddButtons(
-                new(QrColor.Red) { CallbackData = QrColor.Red },
-                new(QrColor.Green) { CallbackData = QrColor.Green },
-                new(QrColor.Blue) { CallbackData = QrColor.Blue });
+                new(QrBotStrings.GetLocalizedString(QrColor.Red, langCode))
+                {
+                    CallbackData = QrColor.Red 
+                },
+                new(QrBotStrings.GetLocalizedString(QrColor.Green, langCode))
+                {
+                    CallbackData = QrColor.Green 
+                },
+                new(QrBotStrings.GetLocalizedString(QrColor.Blue, langCode))
+                {
+                    CallbackData = QrColor.Blue 
+                });
             
-            await client.SendMessage(update.Message.Chat.Id, "Select color scheme", replyMarkup: replyMarkup);
+            await client.SendMessage(update.Message.Chat.Id,
+                QrBotStrings.GetLocalizedString(QrBotStrings.ColorSchemeRequest, update.Message.From.LanguageCode), 
+                replyMarkup: replyMarkup);
         }
 
         private async Task GetQrCodeData(ITelegramBotClient client, Update update, string? data)
@@ -86,7 +108,7 @@ namespace QrBot
                     (x, y, _) => GenerateBarcode(x, y, data));
 
                 await client.SendMessage(update.Message.Chat.Id,
-                    "Enter QR code data",
+                    QrBotStrings.GetLocalizedString(QrBotStrings.QrCodeDataRequest, update.Message.From?.LanguageCode),
                     replyParameters: new()
                     {
                         MessageId = update.Message.MessageId
@@ -101,7 +123,7 @@ namespace QrBot
                 AddPendingRequest(update.Message.From.Id, ScanBarcode);
 
                 await client.SendMessage(update.Message.Chat.Id, 
-                    "Send me an image containing QR code or barcode", 
+                    QrBotStrings.GetLocalizedString(QrBotStrings.ScanRequest, update.Message.From.LanguageCode), 
                     replyParameters: new()
                     {
                         MessageId = update.Message.MessageId
@@ -134,9 +156,10 @@ namespace QrBot
                 var barcodeBitmap = SKBitmap.Decode(stream);
 
                 var result = reader.Decode(barcodeBitmap);
+                var langCode = update.Message.From.LanguageCode;
                 await client.SendMessage(
                     update.Message.Chat.Id,
-                    result is null ? "Sorry, I'm unable to decode this image. Send /scan to try another one" : $"Decoded text\n\n{result.Text}",
+                    result is null ? QrBotStrings.GetLocalizedString(QrBotStrings.UnableToDecode, langCode) : string.Format(QrBotStrings.GetLocalizedString(QrBotStrings.DecodedText, langCode), result.Text),
                     replyParameters: new()
                     {
                         MessageId = update.Message.MessageId
@@ -146,7 +169,7 @@ namespace QrBot
 
             await client.SendMessage(
                 update.Message.Chat.Id,
-                "A single *compressed* image is expected. Try again",
+                QrBotStrings.GetLocalizedString(QrBotStrings.InvalidQrCodeImage, update.Message.From?.LanguageCode),
                 parseMode: ParseMode.Markdown,
                 replyParameters: new()
                 {
@@ -163,11 +186,14 @@ namespace QrBot
         protected override async Task OnCallbackQueryAsync(ITelegramBotClient botClient, Update update, 
             HandlerAction? pendingHandler, CancellationToken cancellationToken = default)
         {
-            if (update is { CallbackQuery: null } or { CallbackQuery.Message: null }) return;
-
-            if (update.CallbackQuery.Message.Text is {} msgText && msgText.Contains("color scheme"))
+            if (update is { CallbackQuery: null } or { CallbackQuery.Message: null } or { CallbackQuery.Data: null })
             {
+                return;
+            }
 
+            if (update.CallbackQuery.Message.Text is not null && update.CallbackQuery.Data.StartsWith(QrColor.Prefix))
+            {
+                var langCode = update.CallbackQuery.From.LanguageCode;
                 await botClient.AnswerCallbackQuery(update.CallbackQuery.Id, cancellationToken: cancellationToken);
 
                 await botClient.EditMessageReplyMarkup(update.CallbackQuery.Message.Chat.Id,
@@ -175,10 +201,14 @@ namespace QrBot
                     replyMarkup: null, cancellationToken: cancellationToken);
 
                 await botClient.EditMessageText(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.Id,
-                    $"Selected color: *{update.CallbackQuery.Data?.ToLower()}*", ParseMode.Markdown,
+                    string.Format(
+                        QrBotStrings.GetLocalizedString(QrBotStrings.SelectedColor, langCode), 
+                        QrBotStrings.GetLocalizedString(update.CallbackQuery.Data ?? QrColor.WhiteOnBlack, langCode).ToLower()),
+                    ParseMode.Markdown,
                     cancellationToken: cancellationToken);
-
+                
                 update.Message = update.CallbackQuery.Message;
+                update.Message.From = update.CallbackQuery.From;
                 
                 await GetQrCodeData(botClient, update, update.CallbackQuery.Data);
             }
@@ -197,7 +227,7 @@ namespace QrBot
                 if (new StringInfo(qrData).LengthInTextElements > 512)
                 {
                     await client.SendMessage(update.Message.Chat.Id,
-                        "The text length must not exceed 512 characters. Send /gen_qr to try again",
+                        QrBotStrings.GetLocalizedString(QrBotStrings.TextTooLong, update.Message.From.LanguageCode),
                         replyParameters: new()
                         {
                             MessageId = update.Message.MessageId
@@ -272,7 +302,7 @@ namespace QrBot
             if (update.Message is null) return;
             
             await client.SendMessage(update.Message.Chat.Id,
-                "A text message is expected. Try again",
+                QrBotStrings.GetLocalizedString(QrBotStrings.TextMessageExpected, update.Message.From?.LanguageCode),
                 replyParameters: new()
                 {
                     MessageId = update.Message.MessageId

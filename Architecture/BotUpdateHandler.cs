@@ -18,24 +18,21 @@ namespace QrBot.Architecture
         private ILogger? Logger { get; }
         protected Bot Bot;
 
-        protected BotCommand[] Commands 
-        { 
-            get
+        protected BotCommand[] GetCommands(string? langCode)
+        {
+            var commands = new BotCommand[_commands.Count];
+            var i = 0;
+
+            foreach (var key in _commands.Keys)
             {
-                var commands = new BotCommand[_commands.Count];
-                var i = 0;
-
-                foreach (var key in _commands.Keys)
+                commands[i++] = new BotCommand
                 {
-                    commands[i++] = new BotCommand
-                    {
-                        Command = key,
-                        Description = _commands[key].Description
-                    };
-                }
+                    Command = key,
+                    Description = _commands[key].GetDescription(langCode)
+                };
+            }
 
-                return commands;
-            } 
+            return commands;
         }
 
         public BotUpdateHandler(string botUsername, Bot bot, ILogger? logger = null)
@@ -142,14 +139,14 @@ namespace QrBot.Architecture
             return null;
         }
 
-        protected void DefineCommand(string command, string description, HandlerAction action)
+        protected void DefineCommand<T>(string name, T command) where T : Command
         {
-            if (_commands.ContainsKey(command))
+            if (_commands.ContainsKey(name))
             {
                 throw new BotUpdateHandlerException("The specified command is already added");
             }
 
-            _commands.Add(command.ToLower(), new Command(description, action));
+            _commands.Add(name, command);
         }
 
         protected void AddPendingRequest(long fromId, HandlerAction action)
