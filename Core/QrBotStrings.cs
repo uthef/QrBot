@@ -169,6 +169,27 @@ public static class QrBotStrings
                 ]
             },
             {
+                QrColor.Yellow,
+                [
+                    "Yellow",
+                    "Жёлтый"
+                ]
+            },
+            {
+                QrColor.Pink,
+                [
+                    "Pink",
+                    "Розовый"
+                ]
+            },
+            {
+                QrColor.Purple,
+                [
+                    "Purple",
+                    "Фиолетовый"
+                ]
+            },
+            {
                 ImageCaption,
                 [
                     "Your QR code is ready!",

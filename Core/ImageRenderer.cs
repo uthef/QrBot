@@ -53,6 +53,21 @@ public class ImageRenderer
             Foreground = SKColors.White,
             Background = SKColors.DarkBlue
         },
+        QrColor.Yellow => new()
+        {
+            Foreground = SKColors.Yellow,
+            Background = SKColors.Black
+        },
+        QrColor.Pink => new()
+        {
+            Foreground = SKColors.HotPink,
+            Background = SKColors.Black
+        },
+        QrColor.Purple => new()
+        {
+            Foreground = SKColors.MediumPurple,
+            Background = SKColors.Black
+        },
         _ => new()
         {
             Foreground = SKColors.Black,

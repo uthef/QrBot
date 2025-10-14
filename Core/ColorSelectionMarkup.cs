@@ -38,6 +38,22 @@ public static class ColorSelectionMarkup
                 CallbackData = QrColor.Blue 
             });
 
+        _markup.AddNewRow();
+
+        _markup.AddButtons(
+            new(QrBotStrings.GetLocalizedString(QrColor.Yellow, langCode))
+            {
+                CallbackData = QrColor.Yellow
+            },
+            new(QrBotStrings.GetLocalizedString(QrColor.Pink, langCode))
+            {
+                CallbackData = QrColor.Pink
+            },
+            new(QrBotStrings.GetLocalizedString(QrColor.Purple, langCode))
+            {
+                CallbackData = QrColor.Purple
+            });
+
         return _markup;
     }
 }

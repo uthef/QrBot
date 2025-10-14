@@ -9,4 +9,7 @@ public static class QrColor
     public const string Red = $"{Prefix}red";
     public const string Green = $"{Prefix}green";
     public const string Blue = $"{Prefix}blue";
+    public const string Yellow = $"{Prefix}yellow";
+    public const string Pink = $"{Prefix}pink";
+    public const string Purple = $"{Prefix}Purple";
 }

@@ -1,6 +1,5 @@
 using QrBot.Architecture;
 using Telegram.Bot;
-using QrBot;
 using QrBot.Core;
 using Telegram.Bot.Polling;
 
