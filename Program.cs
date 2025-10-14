@@ -37,7 +37,7 @@ if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
 }
 
 builder.Services.AddSingleton(botFactory);
-builder.Services.AddControllersWithViews().AddNewtonsoftJson();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 app.MapControllers();
