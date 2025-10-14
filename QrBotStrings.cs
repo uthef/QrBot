@@ -7,23 +7,23 @@ public static class QrBotStrings
     private const int EnglishLangIndex = 0;
     private const int RussianLangIndex = 1;
 
-    public const string InvalidQrCodeImage = "INVALID_QR_CODE_IMAGE";
-    public const string TextTooLong = "TEXT_TOO_LONG";
-    public const string TextMessageExpected = "TEXT_MESSAGE_EXPECTED";
-    public const string UnableToDecode = "UNABLE_TO_DECODE";
+    public const string InvalidQrCodeImage = nameof(InvalidQrCodeImage);
+    public const string TextTooLong = nameof(TextTooLong);
+    public const string TextMessageExpected = nameof(TextMessageExpected);
+    public const string UnableToDecode = nameof(UnableToDecode);
     
-    public const string DecodedText = "DECODED_TEXT";
-    public const string SelectedColor = "SELECTED_COLOR";
-    public const string ImageCaption = "IMAGE_CAPTION";
+    public const string DecodedText = nameof(DecodedText);
+    public const string SelectedColor = nameof(SelectedColor);
+    public const string ImageCaption = nameof(ImageCaption);
     
-    public const string ScanRequest = "SCAN_REQUEST";
-    public const string QrCodeDataRequest = "QR_CODE_DATA_REQUEST";
-    public const string ColorSchemeRequest = "COLOR_SCHEME_REQUEST";
+    public const string ScanRequest = nameof(ScanRequest);
+    public const string QrCodeDataRequest = nameof(QrCodeDataRequest);
+    public const string ColorSchemeRequest = nameof(ColorSchemeRequest);
     
-    public const string AvailableCommandsInfo = "AVAILABLE_COMMANDS_INFO";
-    public const string StartCommandDescription = "START_COMMAND_DESC";
-    public const string GenerateCommandDescription = "GEN_COMMAND_DESC";
-    public const string ScanCommandDescription = "SCAN_COMMAND_DESC";
+    public const string AvailableCommandsInfo = nameof(AvailableCommandsInfo);
+    public const string StartCommandDescription = nameof(StartCommandDescription);
+    public const string GenerateCommandDescription = nameof(GenerateCommandDescription);
+    public const string ScanCommandDescription = nameof(ScanCommandDescription);
 
     public static int GetLangIndex(string? code)
     {
