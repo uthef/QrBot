@@ -3,7 +3,7 @@
     public class BotFactory
     {
         private Dictionary<string, Bot> Bots { get; } = new();
-
+        
         public Bot? Get(string botToken) => Bots.TryGetValue(botToken, out Bot? bot) ? bot : null;
         public void Register(Bot bot)
         {

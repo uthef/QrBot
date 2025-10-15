@@ -5,45 +5,47 @@ using Telegram.Bot.Polling;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+var logger = new Logger<Program>(LoggerFactory.Create(options => options.AddConsole()));
 
 var botFactory = new BotFactory();
 var botTokens = config.GetSection("Bots").Get<Dictionary<string, string>>();
 var baseUrl = config.GetSection("BaseUrl").Get<string>();
 
-builder.Services.AddSingleton(botFactory);
-builder.Services.AddControllers();
-
-var app = builder.Build();
-
-if (botTokens is { } && botTokens.TryGetValue("QrBot", out string? token))
+if (botTokens is null || !botTokens.TryGetValue("QrBot", out var token))
 {
-    var updateHandlerLogger = new Logger<BotUpdateHandler>(LoggerFactory.Create(options =>
-    {
-        options.AddConsole();
-    }));
-
-    var bot = new Bot(token, typeof(QrBotHandler), updateHandlerLogger);
-    await bot.Client.DeleteWebhook();
-
-    if (builder.Environment.IsDevelopment())
-    {
-        app.Logger.LogInformation("Started in long polling mode");
-        bot.Client.StartReceiving(bot.UpdateHandler, new ReceiverOptions
-        {
-            DropPendingUpdates = true,
-        });
-    }
-    else
-    {
-        app.Logger.LogInformation("Started in webhook mode");
-        app.Logger.LogInformation($"Base url: {baseUrl}");
-        
-        var url = $"{baseUrl}/Bot/Post/{token}";
-        await bot.Client.SetWebhook(url);
-    }
-
-    botFactory.Register(bot);
+    throw new Exception("Missing QrBot configuration");
 }
 
-app.MapControllers();
-app.Run();
+var updateHandlerLogger = new Logger<BotUpdateHandler>(
+    LoggerFactory.Create(options => options.AddConsole()));
+
+var bot = new Bot(token, typeof(QrBotHandler), updateHandlerLogger);
+botFactory.Register(bot);
+await bot.Client.DeleteWebhook();
+
+if (builder.Environment.IsDevelopment())
+{
+    logger.LogInformation("Started in long polling mode");
+    bot.Client.StartReceiving(bot.UpdateHandler, new ReceiverOptions
+    {
+        DropPendingUpdates = true,
+    });
+    
+    await Task.Delay(Timeout.Infinite);
+}
+else
+{
+    logger.LogInformation("Started in webhook mode");
+    logger.LogInformation($"Base url: {baseUrl}");
+        
+    var url = $"{baseUrl}/Bot/Post/{token}";
+    await bot.Client.SetWebhook(url);
+    
+    var app = builder.Build();
+    
+    builder.Services.AddSingleton(botFactory);
+    builder.Services.AddControllers();
+    
+    app.MapControllers();
+    app.Run();
+}
