@@ -66,7 +66,7 @@ public class QrBotHandler : BotUpdateHandler
         AddPendingRequest(update.Message.From.Id, GetQrCodeData);
         
         var langCode = update.Message.From.LanguageCode;
-        var replyMarkup = ColorSelectionMarkup.Get(langCode);
+        var replyMarkup = ColorSelectionMarkup.Create(langCode);
         
         await client.SendMessage(update.Message.Chat.Id,
             QrBotStrings.GetLocalizedString(QrBotStrings.ColorSchemeRequest, update.Message.From.LanguageCode), 

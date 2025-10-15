@@ -5,14 +5,11 @@ namespace QrBot.Core;
 
 public static class ColorSelectionMarkup
 {
-    private static InlineKeyboardMarkup? _markup = null;
-    public static InlineKeyboardMarkup Get(string? langCode)
+    public static InlineKeyboardMarkup Create(string? langCode)
     {
-        if (_markup is not null) return _markup;
-
-        _markup = new InlineKeyboardMarkup();
+        var markup = new InlineKeyboardMarkup();
         
-        _markup.AddButtons(
+        markup.AddButtons(
             new(QrBotStrings.GetLocalizedString(QrColor.BlackOnWhite, langCode))
             {
                 CallbackData = QrColor.BlackOnWhite
@@ -22,9 +19,9 @@ public static class ColorSelectionMarkup
                 CallbackData = QrColor.WhiteOnBlack 
             });
 
-        _markup.AddNewRow();
+        markup.AddNewRow();
         
-        _markup.AddButtons(
+        markup.AddButtons(
             new(QrBotStrings.GetLocalizedString(QrColor.Red, langCode))
             {
                 CallbackData = QrColor.Red 
@@ -38,9 +35,9 @@ public static class ColorSelectionMarkup
                 CallbackData = QrColor.Blue 
             });
 
-        _markup.AddNewRow();
+        markup.AddNewRow();
 
-        _markup.AddButtons(
+        markup.AddButtons(
             new(QrBotStrings.GetLocalizedString(QrColor.Yellow, langCode))
             {
                 CallbackData = QrColor.Yellow
@@ -54,6 +51,6 @@ public static class ColorSelectionMarkup
                 CallbackData = QrColor.Purple
             });
 
-        return _markup;
+        return markup;
     }
 }
