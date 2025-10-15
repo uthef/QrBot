@@ -41,10 +41,10 @@ else
     var url = $"{baseUrl}/Bot/Post/{token}";
     await bot.Client.SetWebhook(url);
     
-    var app = builder.Build();
-    
     builder.Services.AddSingleton(botFactory);
     builder.Services.AddControllers();
+    
+    var app = builder.Build();
     
     app.MapControllers();
     app.Run();
