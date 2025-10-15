@@ -136,57 +136,57 @@ public static class QrBotStrings
             {
                 QrColor.WhiteOnBlack,
                 [
-                    "White on black",
-                    "Белый на чёрном"
+                    "\ud83d\udd32 White on black",
+                    "\ud83d\udd32 Белый на чёрном"
                 ]
             },
             {
                 QrColor.BlackOnWhite,
                 [
-                    "Black on white",
-                    "Чёрный на белом"
+                    "\ud83d\udd33 Black on white",
+                    "\ud83d\udd33 Чёрный на белом"
                 ]
             },
             {
                 QrColor.Red,
                 [
-                    "Red",
-                    "Красный"
+                    "\ud83d\udfe5 Red",
+                    "\ud83d\udfe5 Красный"
                 ]
             },
             {
                 QrColor.Blue,
                 [
-                    "Blue",
-                    "Синий"
+                    "\ud83d\udfe6 Blue",
+                    "\ud83d\udfe6 Синий"
                 ]
             },
             {
                 QrColor.Green,
                 [
-                    "Green",
-                    "Зелёный"
+                    "\ud83d\udfe9 Green",
+                    "\ud83d\udfe9 Зелёный"
                 ]
             },
             {
                 QrColor.Yellow,
                 [
-                    "Yellow",
-                    "Жёлтый"
+                    "\ud83d\udfe8 Yellow",
+                    "\ud83d\udfe8 Жёлтый"
                 ]
             },
             {
-                QrColor.Pink,
+                QrColor.Orange,
                 [
-                    "Pink",
-                    "Розовый"
+                    "\ud83d\udfe7 Orange",
+                    "\ud83d\udfe7 Оранжевый"
                 ]
             },
             {
                 QrColor.Purple,
                 [
-                    "Purple",
-                    "Фиолетовый"
+                    "\ud83d\udfea Purple",
+                    "\ud83d\udfea Фиолетовый"
                 ]
             },
             {

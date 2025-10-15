@@ -45,9 +45,9 @@ public static class ColorSelectionMarkup
             {
                 CallbackData = QrColor.Yellow
             },
-            new(QrBotStrings.GetLocalizedString(QrColor.Pink, langCode))
+            new(QrBotStrings.GetLocalizedString(QrColor.Orange, langCode))
             {
-                CallbackData = QrColor.Pink
+                CallbackData = QrColor.Orange
             },
             new(QrBotStrings.GetLocalizedString(QrColor.Purple, langCode))
             {
