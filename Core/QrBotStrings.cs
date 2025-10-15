@@ -25,6 +25,8 @@ public static class QrBotStrings
     public const string GenerateCommandDescription = nameof(GenerateCommandDescription);
     public const string ScanCommandDescription = nameof(ScanCommandDescription);
 
+    public const string ContactInformation = nameof(ContactInformation);
+
     public static int GetLangIndex(string? code)
     {
         return code switch
@@ -187,6 +189,13 @@ public static class QrBotStrings
                 [
                     "\ud83d\udfea Purple",
                     "\ud83d\udfea Фиолетовый"
+                ]
+            },
+            {
+                ContactInformation,
+                [
+                    "Contact the developer: @uthef",
+                    "Связаться с разработчиком: @uthef"
                 ]
             },
             {

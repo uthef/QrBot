@@ -27,6 +27,8 @@ public class QrBotHandler : BotUpdateHandler
         if (update.Message is null) return;
 
         var strBuilder = new StringBuilder();
+        var langCode = update.Message.From?.LanguageCode;
+        
         strBuilder.AppendLine(QrBotStrings.GetLocalizedString(QrBotStrings.AvailableCommandsInfo, 
             update.Message.From?.LanguageCode));
         strBuilder.AppendLine();
@@ -35,6 +37,10 @@ public class QrBotHandler : BotUpdateHandler
         {
             strBuilder.AppendLine($"/{item.Command} - {item.Description}");
         }
+        
+        strBuilder.AppendLine();
+        strBuilder.AppendLine(QrBotStrings.GetLocalizedString(QrBotStrings.ContactInformation, langCode));
+        
         await client.SendMessage(update.Message.Chat.Id, 
             strBuilder.ToString(), 
             replyParameters: new()
