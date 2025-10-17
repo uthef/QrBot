@@ -21,7 +21,12 @@ var updateHandlerLogger = new Logger<BotUpdateHandler>(
 
 var bot = new Bot(token, typeof(QrBotHandler), updateHandlerLogger);
 botFactory.Register(bot);
+
 await bot.Client.DeleteWebhook();
+await bot.Client.SetMyDescription(QrBotStrings.GetLocalizedString(QrBotStrings.BotDescription, "ru"), "ru");
+await bot.Client.SetMyDescription(QrBotStrings.GetLocalizedString(QrBotStrings.BotDescription, "en"));
+await bot.Client.SetMyShortDescription(QrBotStrings.GetLocalizedString(QrBotStrings.BotDescription, "ru"), "ru");
+await bot.Client.SetMyShortDescription(QrBotStrings.GetLocalizedString(QrBotStrings.BotDescription, "en"));
 
 if (builder.Environment.IsDevelopment())
 {

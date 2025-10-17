@@ -24,6 +24,7 @@ public static class QrBotStrings
     public const string StartCommandDescription = nameof(StartCommandDescription);
     public const string GenerateCommandDescription = nameof(GenerateCommandDescription);
     public const string ScanCommandDescription = nameof(ScanCommandDescription);
+    public const string BotDescription = nameof(BotDescription);
 
     public const string ContactInformation = nameof(ContactInformation);
 
@@ -203,6 +204,13 @@ public static class QrBotStrings
                 [
                     "Your QR code is ready!",
                     "Ваш QR-код готов!"
+                ]
+            },
+            {
+                BotDescription,
+                [
+                    "Generate and scan QR codes.\n\nThis bot does not store or sell your input data.",
+                    "Генерируйте и сканируйте QR-коды.\n\nЭтот бот не хранит и не продаёт данные, которые Вы вводите."
                 ]
             }
         }.ToImmutableDictionary();
