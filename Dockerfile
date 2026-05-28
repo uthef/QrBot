@@ -16,7 +16,7 @@ FROM build AS publish
 RUN dotnet publish "QrBot.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 RUN --mount=type=secret,id=appsettings.json,dst=/etc/secrets/appsettings.json
-RUN ls /etc/secrets
+RUN cat /etc/secrets/appsettings.json
 
 FROM base AS final
 WORKDIR /app
