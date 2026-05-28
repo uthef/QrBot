@@ -15,6 +15,8 @@ RUN dotnet build "QrBot.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "QrBot.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+RUN ls /etc/secrets
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
